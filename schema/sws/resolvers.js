@@ -63,6 +63,14 @@ const Resolvers = {
       };
       console.log(req.uri);
       return rp(req).then(res => JSON.parse(res));
+  },
+  GetStudentPerson: (key, impersonate) => {
+    let req = buildRequest(`${BaseUrl}person/${key}`, impersonate);
+    return rp(req).then(res => JSON.parse(res));
+  },
+  SearchStudentPerson: (args, impersonate) => {
+    let req = buildRequest(`${BaseUrl}/person?employee_id=${args.EmployeeID || ''}&net_id=${args.UWNetID || ''}&reg_id=${args.UWRegID || ''}&student_number=${args.StudentNumber || ''}&student_system_key=${args.StudentSystemkey || ''}`, impersonate);
+    return rp(req).then(JSON.parse);
   }
 }
 

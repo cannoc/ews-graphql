@@ -7,6 +7,7 @@ const { CurricSearchType, CurricType } = require('./curriculum');
 const { TermType, BaseTermType } = require('./term');
 const { CourseType, CourseSearchType } = require('./course');
 const { SectionType, SectionSearchType, BaseSectionType } = require('./section');
+const { SWSPerson, SWSPersonSearch } = require('./swsPerson');
 
 const sws = {
   GetTerm: {
@@ -105,7 +106,25 @@ const sws = {
           RoomNumber: { type: GraphQLString },
           Sln: { type: GraphQLString },
       },
-      resolve: (root, args) => Resolvers.SectionSearch(args)
+      resolve: (root, args, {impersonate}) => Resolvers.SectionSearch(args,impersonate)
+  },
+  GetSWSPerson: {
+    type: SWSPerson,
+    args: {
+      ID: { type: GraphQLString }
+    },
+    resolve: (root, args, {loaders}) => loaders.swsPerson.load(args.ID)
+  },
+  SWSPersonSearch: {
+    type: SWSPersonSearch,
+    args: {
+      EmployeeID: { type: GraphQLString },
+      UWNetID: { type: GraphQLString },
+      UWRegID: { type: GraphQLString },
+      StudentNumber: { type: GraphQLString },
+      StudentSystemKey: { type: GraphQLString }
+    },
+     resolve: (root, args, {impersonate}) => Resolvers.SearchStudentPerson(args, impersonate)
   }
 }
 
