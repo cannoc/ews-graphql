@@ -33,9 +33,9 @@ const BaseCourseType = new GraphQLObjectType({
                 PageStart: {type: GraphQLInt},
                 SectionId: { type: GraphQLString }
             },
-            resolve: (course, args, {loaders}) => 
+            resolve: (course, args, {impersonate}) => 
             { 
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber}))
+                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber}), impersonate)
                 .then(res => res.Sections)
                 .then(sections => { 
                     if(args.SectionId) { 
@@ -72,9 +72,9 @@ const CourseType = new GraphQLObjectType({
                 PageSize: {type: GraphQLInt},
                 PageStart: {type: GraphQLInt}
             },
-            resolve: (course, args, {loaders}) => 
+            resolve: (course, args, {impersonate}) => 
             { 
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber}))
+                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber}), impersonate)
                 .then(res => res.Sections)
             }
         },

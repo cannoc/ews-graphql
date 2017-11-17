@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } = require('graphql');
+const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLBoolean, GraphQLList, GraphQLNonNull } = require('graphql');
 const { CompositeKey } = require('../utils');
 
 // Curriculum Models
@@ -32,13 +32,16 @@ const CurricType = new GraphQLObjectType({
       args: {
         PageSize: {type: GraphQLInt},
         PageStart: {type: GraphQLInt},
-        CourseNumber: {type: GraphQLInt}
+        CourseNumber: {type: GraphQLInt},
+        CurrentTerm: {type: GraphQLBoolean }
       },
-      resolve: (curric, args) => {
-        args.Year = curric.Year;
-        args.Quarter = curric.Quarter;
-        args.CurriculumAbbr = curric.CurriculumAbbreviation;
-        return require('./resolvers').CourseSearch(args).then(res => res.Courses);
+      resolve: (curric, args, {loaders, impersonate}) => {
+        let courseArgs = Object.assign({}, args, {Year: curric.Year, Quarter: curric.Quarter, CurriculumAbbr: curric.CurriculumAbbreviation});
+        if(args.CurrentTerm) {
+          let term = loaders.term.load("current");
+          courseArgs = Object.assign({}, courseArgs, {Year: term.Year, Quarter: term.Quarter });
+        }
+        return require('./resolvers').CourseSearch(courseArgs, impersonate).then(res => res.Courses);
       }
     }
   })

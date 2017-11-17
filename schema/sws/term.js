@@ -35,15 +35,15 @@ const TermType = new GraphQLObjectType({
       args: {
         PageSize: {type: GraphQLInt},
         PageStart: {type: GraphQLInt},
-        CollegeAbbr: { type: GraphQLString },
+        CollegeAbbreviation: { type: GraphQLString },
         DeptAbbr: { type: GraphQLString }
       },
-      resolve: (term, args) => {
+      resolve: (term, args, {impersonate}) => {
         args = Object.assign({}, args, {
           Year: term.Year,
           Quarter: term.Quarter
         });
-        return require('./resolvers').SearchCurriculum(args).then(res => res.Curricula);
+        return require('./resolvers').SearchCurriculum(args, impersonate).then(res => res.Curricula);
       }
     }
   }),

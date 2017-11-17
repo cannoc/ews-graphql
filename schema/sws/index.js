@@ -1,4 +1,4 @@
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } = require('graphql');
+const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLList, GraphQLNonNull } = require('graphql');
 const Resolvers = require('./resolvers');
 const { CompositeKey } = require('../utils');
 
@@ -8,6 +8,7 @@ const { TermType, BaseTermType } = require('./term');
 const { CourseType, CourseSearchType } = require('./course');
 const { SectionType, SectionSearchType, BaseSectionType } = require('./section');
 const { SWSPerson, SWSPersonSearch } = require('./swsPerson');
+const { CollegeType, CollegeSearchType } = require('./college');
 
 const sws = {
   GetTerm: {
@@ -27,10 +28,10 @@ const sws = {
   CurriculumSearch: {
     type: CurricSearchType,
     args: {
-      Year: { type: new GraphQLNonNull(GraphQLInt) },
-      Quarter: { type: new GraphQLNonNull(GraphQLString) },
+      Year: { type: GraphQLInt },
+      Quarter: { type: GraphQLString },
       FutureTerms: { type: GraphQLInt },
-      CollegeAbbr: { type: GraphQLString },
+      CollegeAbbreviation: { type: GraphQLString },
       DeptAbbr: { type: GraphQLString }
     },
     resolve: (root, args, {impersonate}) => Resolvers.SearchCurriculum(args, impersonate)
@@ -42,7 +43,7 @@ const sws = {
       Quarter: { type: new GraphQLNonNull(GraphQLString) },
       DeptAbbr: { type: GraphQLString }
     },
-    resolve: (root, args) => Resolvers.GetCurriculum(args)
+    resolve: (root, args, {impersonate}) => Resolvers.GetCurriculum(args, impersonate)
   },
   CourseSearch: {
       type: CourseSearchType,
@@ -60,7 +61,7 @@ const sws = {
           Year:  { type: new GraphQLNonNull(GraphQLInt) },
           ExcludeCoursesWithoutSections: { type: GraphQLString }
       },
-      resolve: (root, args) => Resolvers.CourseSearch(args)
+      resolve: (root, args, {impersonate}) => Resolvers.CourseSearch(args, impersonate)
   },
   GetCourse: {
       type: CourseType,
@@ -125,6 +126,31 @@ const sws = {
       StudentSystemKey: { type: GraphQLString }
     },
      resolve: (root, args, {impersonate}) => Resolvers.SearchStudentPerson(args, impersonate)
+  },
+  CollegeSearch: {
+    type: CollegeSearchType,
+    args: {
+      CampusShortName: { type: GraphQLString },
+      Quarter: { type: GraphQLString },
+      Year: { type: GraphQLInt },
+      FutureTerms: { type: GraphQLInt },
+      CurrentTerm: { type: GraphQLBoolean }
+    },
+    resolve: (root, args, {loaders, impersonate}) => {
+      let collegeArgs = args;
+      if(args.CurrentTerm) {
+        let term = loaders.term.load("current");
+        collegeArgs = Object.assign({}, args, {Year: term.Year, Quarter: term.Quarter });
+      }
+      return Resolvers.CollegeSearch(collegeArgs, impersonate)
+    }
+  },
+  GetCollege: {
+    type: CollegeType,
+    args: {
+      CollegeShortName: { type: GraphQLString }
+    },
+    resolve: (root, args, {impersonate}) => Resolvers.GetCollege(args.CollegeShortName, impersonate)
   }
 }
 
