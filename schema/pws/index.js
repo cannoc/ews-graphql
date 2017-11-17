@@ -1,6 +1,5 @@
 const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } = require('graphql');
 const Resolvers = require('./resolvers');
-const { CompositeKey } = require('../utils');
 import {PWSPersonType, PWSPersonSearchType} from './pwsPerson';
 
 const pws = {
