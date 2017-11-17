@@ -5,18 +5,20 @@ import {buildRequest} from '../utils';
 const BaseUrl = process.env.IDCardBaseUrl;
 
 const Resolvers = {
-    GetPhoto: () => {
-        return null;
+    GetPhoto: (args, impersonate) => {
+        let photos = Resolvers.PhotoSearch(args, impersonate);
+        return photos.then(res => res.Photos[0]);
     },
-    PhotoSearch: () => {
-        return null;
+    PhotoSearch: (args, impersonate) => {
+        let req = buildRequest(`${BaseUrl}photo?employee_id=${args.EmployeeID || ''}&height=${args.Height || ''}&net_id=${args.NetID || ''}&reg_id=${args.RegID || ''}&student_number=${args.StudentNumber || ''}`, impersonate);
+        return rp(req).then(res => JSON.parse(res));
     },
-    GetCard: () => {
-        // will need to be faked
-        return null;
+    GetCard: (args, impersonate) => {
+        return Resolvers.CardSearch(args, impersonate).then(res => res.Cards[0]);
     },
-    CardSearch: () => {
-        return null;
+    CardSearch: (args, impersonate) => {
+        let req = buildRequest(`${BaseUrl}card?prox_rfid=${args.ProxRFID || ''}&mag_strip_code=${args.MagStripCode || ''}`, impersonate);
+        return rp(req).then(res => JSON.parse(res));
     }
 }
 

@@ -19,7 +19,6 @@ const Resolvers = {
       },
       headers
     }
-    console.log(req.uri);
     return rp(req).then(res => JSON.parse(res)).then(res => {
         let PageStart = args.PageStart || 0;
         let PageEnd = (args.PageSize || 10) + PageStart;

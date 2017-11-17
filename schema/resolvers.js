@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader';
 import sws from './sws/resolvers';
 import pws from './pws/resolvers';
+import idcard from './idcard/resolvers';
 
 function createLoaders(impersonate) {
     return {
