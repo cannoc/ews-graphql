@@ -9,6 +9,8 @@ const { CourseType, CourseSearchType } = require('./course');
 const { SectionType, SectionSearchType, BaseSectionType } = require('./section');
 const { SWSPerson, SWSPersonSearch } = require('./swsPerson');
 const { CollegeType, CollegeSearchType } = require('./college');
+const { RegistrationSearchType, RegistrationType } = require('./registration');
+const { EnrollmentSearchType } = require('./enrollment');
 
 const sws = {
   GetTerm: {
@@ -151,6 +153,32 @@ const sws = {
       CollegeShortName: { type: GraphQLString }
     },
     resolve: (root, args, {impersonate}) => Resolvers.GetCollege(args.CollegeShortName, impersonate)
+  },
+  SearchRegistration: {
+    type: RegistrationSearchType,
+    args: {
+      ChangedSince: { type: GraphQLString },
+      CourseNumber: { type: GraphQLInt },
+      CurriculumAbbr: { type: GraphQLString },
+      InstructorRegID: { type: GraphQLString },
+      ActiveRegistration: { type: GraphQLBoolean },
+      Quarter: { type: GraphQLString },
+      RegID: { type: GraphQLString },
+      SectionID: { type: GraphQLString },
+      TranscriptableCourse: { type: GraphQLBoolean },
+      Year: { type: GraphQLInt }
+    },
+    resolve: (root, args, {impersonate}) => Resolvers.SearchRegistration(args, impersonate)
+  },
+  // GetRegistration: {
+    
+  // },
+  GetEnrollment: {
+    type: EnrollmentSearchType,
+    args: {
+      RegID: { type: GraphQLString }
+    },
+    resolve: (root, args, {loaders}) => loaders.enrollment.load(args.RegID)
   }
 }
 

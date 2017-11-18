@@ -57,6 +57,16 @@ const Resolvers = {
   },
   GetCollege: (key, impersonate) => {
     return Resolvers.CollegeSearch({CampusShortName: key}, impersonate).then(res => res.Colleges[0]);
+  },
+  SearchRegistration: (args, impersonate) => {
+    let req = buildRequest(`${BaseUrl}registration?changed_since_date=${args.ChangedSinceDate || ''}&course_number=${args.CourseNumber || ''}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&instructor_reg_id=${args.InstructorRegID || ''}&Quarter=${args.Quarter || ''}&reg_id=${args.RegID || ''}&section_id=${args.SectionID || ''}&transcriptable_course=${args.TranscriptableCourse || ''}&verbose=true&Year=${args.Year || ''}`, impersonate);
+    
+    return rp(req).then(JSON.parse);
+  },
+  GetEnrollment: (key, impersonate) => {
+    let req = buildRequest(`${BaseUrl}enrollment?reg_id=${key}&verbose=true`, impersonate);
+
+    return rp(req).then(JSON.parse);
   }
   
 }

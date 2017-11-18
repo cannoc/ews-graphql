@@ -33,8 +33,8 @@ const AddressType = new GraphQLObjectType({
 });
 
 const RegIDUrlType = new GraphQLObjectType({
-    name: "NoticeType",
-    description: "Notice Type",
+    name: "RegIDUrlType",
+    description: "RegID Url Type",
     fields: () => ({
         Href: { type: GraphQLString },
         RegID: { type: GraphQLString }
@@ -125,4 +125,4 @@ const SWSPerson = new GraphQLObjectType({
     })
   });
 
-export { SWSPerson, SWSPersonSearch }
+export { SWSPerson, SWSPersonSearch, RegIDUrlType }

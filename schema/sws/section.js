@@ -10,6 +10,14 @@ const SectionSearchType = new GraphQLObjectType({
   })
 });
 
+const VerboseSectionWrapper = new GraphQLObjectType({
+  name: 'VerboseSectionWrapper',
+  description: 'Verbose Section List',
+  fields: () => ({
+    Sections: { type: new GraphQLList(SectionType)}
+  })
+});
+
 const SectionType = new GraphQLObjectType({
   name: 'SectionType',
   description: 'SWS Section Model',
@@ -26,6 +34,7 @@ const SectionType = new GraphQLObjectType({
     },
     CourseTitle: { type: GraphQLString },
     SectionID: { type: GraphQLString },
+    Meetings: { type: new GraphQLList(SectionMeeting) }
   })
 });
 
@@ -46,4 +55,67 @@ const BaseSectionType = new GraphQLObjectType({
   })
 });
 
-module.exports = { SectionSearchType, SectionType, BaseSectionType };
+const SectionMeeting = new GraphQLObjectType({
+  name: 'SectionMeetingType',
+  description: 'Section Meeting Type',
+  fields: () => ({
+    Building: { type: GraphQLString },
+    BuildingToBeArranged: { type: GraphQLBoolean },
+    DaysOfWeek: { type: DaysOfWeek },
+    DaysOfWeekToBeArranged: { type: GraphQLBoolean },
+    EndTime: { type: GraphQLString },
+    Instructors: { type: new GraphQLList(InstructorType)},
+    Meeting: { type: HrefType },
+    MeetingIndex: { type: GraphQLString },
+    MeetingType: { type: GraphQLString },
+    RoomNumber: { type: GraphQLString },
+    RoomToBeArranged: { type: GraphQLBoolean },
+    StartTime: { type: GraphQLString }
+  })
+});
+
+const DaysOfWeek = new GraphQLObjectType({
+  name: 'DaysOfWeek',
+  description: 'Days of Week Type',
+  fields: () => ({
+    Days: {type: new GraphQLList(DayType)},
+    Text: { type: GraphQLString }
+  })
+});
+
+const DayType = new GraphQLObjectType({
+  name: 'DayType',
+  description: 'Day Type',
+  fields: () => ({
+    Name: { type: GraphQLString }
+  })
+});
+
+const InstructorType = new GraphQLObjectType({
+  name: 'InstructorType',
+  description: 'Instructor Type',
+  fields: () => ({
+    FacultySequenceNumber: { type: GraphQLString },
+    GradeRoster: { type: HrefType },
+    PercentInvolve: { type: GraphQLString },
+    Person: { type: require('./swsPerson').RegIDUrlType },
+    TSPrint: { type: GraphQLBoolean },
+    SWSPerson: {
+      type: require('../sws/swsPerson').SWSPerson,
+      resolve: (root, args, {loaders}) => loaders.swsPerson.load(root.Person.RegID)
+    },
+    PWSPerson: {
+      type: require('../pws/pwsPerson').PWSPersonType,
+      resolve: (root, args, {loaders}) => loaders.pwsPerson.load(root.Person.RegID)
+    },
+  })
+});
+const HrefType = new GraphQLObjectType({
+  name: 'HrefType',
+  description: 'Href Type',
+  fields: () => ({
+    Href: { type: GraphQLString }
+  })
+});
+
+module.exports = { SectionSearchType, SectionType, BaseSectionType, VerboseSectionWrapper };

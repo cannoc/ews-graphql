@@ -66,16 +66,43 @@ const CourseType = new GraphQLObjectType({
         Metadata: { type: GraphQLString },
         MinimumTermCredit: { type: GraphQLInt },
         RepositoryTimeStamp: { type: GraphQLString },
-        Sections: {
-            type: new GraphQLList(require('./section').BaseSectionType),
+        VerboseSections: {
+            type: new GraphQLList(require('./section').SectionType),
             args: {
                 PageSize: {type: GraphQLInt},
                 PageStart: {type: GraphQLInt}
             },
-            resolve: (course, args, {impersonate}) => 
+            resolve: (course, args, {loaders, impersonate}) => 
             { 
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber}), impersonate)
-                .then(res => res.Sections)
+                let sects = [];
+                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
+                .then(res => res.Sections).then(sections => {
+                    sections.forEach((section) => {
+                        sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
+                    });
+                }).then(() => { return sects; });
+            }
+        },
+        Sections: {
+            type: new GraphQLList(require('./section').BaseSectionType),
+            args: {
+                PageSize: {type: GraphQLInt},
+                PageStart: {type: GraphQLInt},
+                Verbose: { type: GraphQLBoolean }
+            },
+            resolve: (course, args, {loaders, impersonate}) => 
+            { 
+                let sections = require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
+                .then(res => res.Sections);
+
+                if(args.Verbose) {
+                    let sections = [];
+                    sections.forEach((section) => {
+                        sections.push(loaders.section.load(CompositeKey(course.Key.Year, course.Key.Quarter, course.Key.Curriculum, course.Key.CourseNumber + "/" + args.SectionId)));
+                    });
+                    return sections;
+                }
+                return sections;
             }
         },
         Section: {
