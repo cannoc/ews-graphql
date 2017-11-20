@@ -5,7 +5,10 @@ const RegistrationSearchType = new GraphQLObjectType({
     name: "RegistrationSearchType",
     description: "Registration Search Type",
     fields: () => ({
-        Registrations: { type: new GraphQLList(RegistrationBaseType)}
+        Registrations: { type: new GraphQLList(RegistrationBaseType)},
+        TotalCount: { type: GraphQLInt },
+        PageSize: { type: GraphQLString },
+        PageStart: { type: GraphQLString }
     })
 });
 

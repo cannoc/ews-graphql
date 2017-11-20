@@ -6,7 +6,11 @@ const SectionSearchType = new GraphQLObjectType({
   name: 'SectionSearch',
   description: 'SWS Section Search',
   fields: () => ({
-    Sections: { type: new GraphQLList(BaseSectionType)}
+    TotalCount: { type: GraphQLInt },
+    PageSize: { type: GraphQLString },
+    PageStart: { type: GraphQLString },
+    Sections: { type: new GraphQLList(BaseSectionType)},
+    
   })
 });
 
@@ -14,6 +18,9 @@ const VerboseSectionWrapper = new GraphQLObjectType({
   name: 'VerboseSectionWrapper',
   description: 'Verbose Section List',
   fields: () => ({
+    TotalCount: { type: GraphQLInt },
+    PageSize: { type: GraphQLString },
+    PageStart: { type: GraphQLString },
     Sections: { type: new GraphQLList(SectionType)}
   })
 });

@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 import fs from 'fs';
-import {buildRequest} from '../utils';
+import {buildRequest, PageResult } from '../utils';
 
 const BaseUrl = process.env.SWSBaseUrl;
 
@@ -13,11 +13,10 @@ const Resolvers = {
     let req = buildRequest(`${BaseUrl}Curriculum?college_abbreviation=${args.CollegeAbbreviation || ''}&department_abbreviation=${args.DeptAbbr || ''}&future_terms=${args.FutureTerms || 0}&Quarter=${args.Quarter || ''}&Year=${args.Year || ''}`, impersonate);
 
     return rp(req).then(res => JSON.parse(res)).then(res => {
-        let PageStart = args.PageStart || 0;
-        let PageEnd = (args.PageSize || 10) + PageStart;
-        // Curriculum does not support paging, we'll fake it
-        res.Curricula = res.Curricula.slice(PageStart, PageEnd);
-        return res;
+      res.Curricula = PageResult(res.Curricula, args.PageStart, args.PageSize);
+      res.PageStart = args.PageStart || 0;
+      res.PageSize = args.PageSize || 10;
+      return res;
     });
   },
   GetCurriculum: (args, impersonate) => {
@@ -53,10 +52,18 @@ const Resolvers = {
   CollegeSearch: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}/college?campus_short_name=${args.CampusShortName || ''}&future_terms=${args.FutureTerms || 0}&quarter=${args.Quarter || ''}&year=${args.Year || ''}`, impersonate);
     
-    return rp(req).then(JSON.parse);
+    return rp(req).then(JSON.parse).then(res => {
+      res.Colleges = PageResult(res.Colleges, args.PageStart, args.PageSize);
+      res.PageStart = args.PageStart || 0;
+      res.PageSize = args.PageSize || 10;
+      return res;
+    });
   },
   GetCollege: (key, impersonate) => {
-    return Resolvers.CollegeSearch({CampusShortName: key}, impersonate).then(res => res.Colleges[0]);
+    // No get college implemented, we'll fake it
+    return Resolvers.CollegeSearch({}, impersonate).then(res => res.Colleges.filter((coll) => {
+      return coll.CollegeAbbreviation === key;
+    })).then(res => res[0]);
   },
   SearchRegistration: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}registration?changed_since_date=${args.ChangedSinceDate || ''}&course_number=${args.CourseNumber || ''}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&instructor_reg_id=${args.InstructorRegID || ''}&Quarter=${args.Quarter || ''}&reg_id=${args.RegID || ''}&section_id=${args.SectionID || ''}&transcriptable_course=${args.TranscriptableCourse || ''}&verbose=true&Year=${args.Year || ''}`, impersonate);

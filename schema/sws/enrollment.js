@@ -5,7 +5,10 @@ const EnrollmentSearchType = new GraphQLObjectType({
     name: "EnrollmentSearchType",
     description: "Enrollment Search Type",
     fields: () => ({
-        Enrollments: { type: new GraphQLList(EnrollmentType)}
+        Enrollments: { type: new GraphQLList(EnrollmentType)},
+        TotalCount: { type: GraphQLInt },
+        PageSize: { type: GraphQLString },
+        PageStart: { type: GraphQLString }
     })
 });
 

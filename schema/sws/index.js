@@ -34,7 +34,9 @@ const sws = {
       Quarter: { type: GraphQLString },
       FutureTerms: { type: GraphQLInt },
       CollegeAbbreviation: { type: GraphQLString },
-      DeptAbbr: { type: GraphQLString }
+      DeptAbbr: { type: GraphQLString },
+      PageStart: { type: GraphQLInt },
+      PageSize: { type: GraphQLInt }
     },
     resolve: (root, args, {impersonate}) => Resolvers.SearchCurriculum(args, impersonate)
   },
@@ -136,7 +138,9 @@ const sws = {
       Quarter: { type: GraphQLString },
       Year: { type: GraphQLInt },
       FutureTerms: { type: GraphQLInt },
-      CurrentTerm: { type: GraphQLBoolean }
+      CurrentTerm: { type: GraphQLBoolean },
+      PageSize: { type: GraphQLInt },
+      PageStart: { type: GraphQLInt }
     },
     resolve: (root, args, {loaders, impersonate}) => {
       let collegeArgs = args;
@@ -150,9 +154,9 @@ const sws = {
   GetCollege: {
     type: CollegeType,
     args: {
-      CollegeShortName: { type: GraphQLString }
+      CollegeAbbreviation: { type: GraphQLString }
     },
-    resolve: (root, args, {impersonate}) => Resolvers.GetCollege(args.CollegeShortName, impersonate)
+    resolve: (root, args, {impersonate}) => Resolvers.GetCollege(args.CollegeAbbreviation, impersonate)
   },
   SearchRegistration: {
     type: RegistrationSearchType,

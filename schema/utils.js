@@ -49,4 +49,11 @@ function validateCert(cert) {
   return false;
 }
 
-module.exports = { CompositeKey, buildRequest, validateCert };
+// Fakes paging for resources that do not support it natively
+const PageResult = (collection, pStart, pSize) => {
+  let PageStart = pStart || 0;
+  let PageEnd = (pSize || 10) + PageStart;
+  return collection.slice(PageStart, PageEnd);
+}
+
+module.exports = { CompositeKey, buildRequest, validateCert, PageResult };

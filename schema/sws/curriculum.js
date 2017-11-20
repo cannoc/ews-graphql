@@ -6,6 +6,8 @@ const CurricSearchType = new GraphQLObjectType({
   name: 'CurriculumSearch',
   fields: () => ({
     TotalCount: { type: GraphQLInt },
+    PageSize: { type: GraphQLString },
+    PageStart: { type: GraphQLString },
     Curricula: { type: new GraphQLList(CurricType) },
   })
 });
@@ -28,7 +30,7 @@ const CurricType = new GraphQLObjectType({
       resolve: (curric, args, {loaders}) => loaders.term.load(CompositeKey(curric.Year, curric.Quarter))
     },
     Courses: {
-      type: new GraphQLList(require('./course').BaseCourseType),
+      type: require('./course').CourseSearchType,
       args: {
         PageSize: {type: GraphQLInt},
         PageStart: {type: GraphQLInt},
@@ -41,10 +43,10 @@ const CurricType = new GraphQLObjectType({
           let term = loaders.term.load("current");
           courseArgs = Object.assign({}, courseArgs, {Year: term.Year, Quarter: term.Quarter });
         }
-        return require('./resolvers').CourseSearch(courseArgs, impersonate).then(res => res.Courses);
+        return require('./resolvers').CourseSearch(courseArgs, impersonate);
       }
     }
   })
 });
 
-module.exports = { CurricSearchType, CurricType };
+module.exports = { CurricSearchType, CurricType }

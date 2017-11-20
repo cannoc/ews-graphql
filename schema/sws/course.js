@@ -44,7 +44,29 @@ const BaseCourseType = new GraphQLObjectType({
                     return sections;
                 });
             }
-        }
+        },
+        VerboseSections: {
+            type: require('./section').VerboseSectionWrapper,
+            args: {
+                PageSize: {type: GraphQLInt},
+                PageStart: {type: GraphQLInt}
+            },
+            resolve: (course, args, {loaders, impersonate}) => 
+            { 
+                let sects = [];
+                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber }), impersonate)
+                .then(res => {
+                    console.log("sections", res.Sections)
+                    res.Sections.forEach((section) => {
+                        sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
+                    });
+                    return res;
+                }).then((res) => { 
+                    res.Sections = sects;
+                    return res;
+                 });
+            }
+        },
     })
 });
 const CourseType = new GraphQLObjectType({
@@ -67,7 +89,7 @@ const CourseType = new GraphQLObjectType({
         MinimumTermCredit: { type: GraphQLInt },
         RepositoryTimeStamp: { type: GraphQLString },
         VerboseSections: {
-            type: new GraphQLList(require('./section').SectionType),
+            type: require('./section').VerboseSectionWrapper,
             args: {
                 PageSize: {type: GraphQLInt},
                 PageStart: {type: GraphQLInt}
@@ -75,12 +97,16 @@ const CourseType = new GraphQLObjectType({
             resolve: (course, args, {loaders, impersonate}) => 
             { 
                 let sects = [];
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
-                .then(res => res.Sections).then(sections => {
-                    sections.forEach((section) => {
+                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber }), impersonate)
+                .then(res => {
+                    res.sections.forEach((section) => {
                         sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
                     });
-                }).then(() => { return sects; });
+                }).then((res) => { 
+                    console.log(res)
+                    res.Sections = sects;
+                    return res;
+                 });
             }
         },
         Sections: {
@@ -92,21 +118,12 @@ const CourseType = new GraphQLObjectType({
             },
             resolve: (course, args, {loaders, impersonate}) => 
             { 
-                let sections = require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
+                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
                 .then(res => res.Sections);
-
-                if(args.Verbose) {
-                    let sections = [];
-                    sections.forEach((section) => {
-                        sections.push(loaders.section.load(CompositeKey(course.Key.Year, course.Key.Quarter, course.Key.Curriculum, course.Key.CourseNumber + "/" + args.SectionId)));
-                    });
-                    return sections;
-                }
-                return sections;
             }
         },
         Section: {
-            type: require('./section').SectionType,
+            type: require('./section').SectionSearchType,
             args: {
                 SectionId: { type: new GraphQLNonNull(GraphQLString)}
             },
@@ -123,10 +140,10 @@ const CourseSearchType = new GraphQLObjectType({
     Courses: { type: new GraphQLList(BaseCourseType) },
     Current: { type: BaseCourseType },
     Next: { type: BaseCourseType },
-    PageSize: { type: GraphQLString },
-    PageStart: { type: GraphQLString },
     Previous: { type: BaseCourseType },
     TotalCount: { type: GraphQLInt },
+    PageSize: { type: GraphQLString },
+    PageStart: { type: GraphQLString },
   })
 });
 

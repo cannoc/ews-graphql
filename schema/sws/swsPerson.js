@@ -45,7 +45,10 @@ const SWSPersonSearch = new GraphQLObjectType({
     name: "SWSPersonSearchType",
     description: "SWS Person Search",
     fields: () => ({
-        Persons: { type: new GraphQLList(SWSPersonSearchPersons)}
+        Persons: { type: new GraphQLList(SWSPersonSearchPersons)},
+        TotalCount: { type: GraphQLInt },
+        PageSize: { type: GraphQLString },
+        PageStart: { type: GraphQLString }
     })
 });
 

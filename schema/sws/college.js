@@ -41,7 +41,11 @@ const CollegeSearchType = new GraphQLObjectType({
     name: "CollegeSearchType",
     description: "College Search Type",
     fields: () => ({
-        Colleges: { type: new GraphQLList(CollegeType) }
+        TotalCount: { type: GraphQLInt },
+        PageSize: { type: GraphQLString },
+        PageStart: { type: GraphQLString },
+        Colleges: { type: new GraphQLList(CollegeType) },    
+        
     })
 });
 
