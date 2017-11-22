@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLBoolean } = require('graphql');
+const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const { CompositeKey } = require('../utils');
 
 const PersonAffiliationsType = new GraphQLObjectType({

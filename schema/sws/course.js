@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLBoolean } = require('graphql');
+const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLFloat, GraphQLList, GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const { CompositeKey } = require('../utils');
 
 // Course Models
@@ -56,7 +56,6 @@ const BaseCourseType = new GraphQLObjectType({
                 let sects = [];
                 return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber }), impersonate)
                 .then(res => {
-                    console.log("sections", res.Sections)
                     res.Sections.forEach((section) => {
                         sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
                     });
@@ -83,10 +82,10 @@ const CourseType = new GraphQLObjectType({
         GeneralEducationRequirements: { type: GeneralEducationRequirementsType },
         GradingSystem: { type: GraphQLString },
         LastEffectiveTerm: { type: new require('./term').BaseTermType },
-        MaximumCredit: { type: GraphQLInt },
-        MaximumTermCredit: { type: GraphQLInt },
+        MaximumCredit: { type: GraphQLFloat },
+        MaximumTermCredit: { type: GraphQLFloat },
         Metadata: { type: GraphQLString },
-        MinimumTermCredit: { type: GraphQLInt },
+        MinimumTermCredit: { type: GraphQLFloat },
         RepositoryTimeStamp: { type: GraphQLString },
         VerboseSections: {
             type: require('./section').VerboseSectionWrapper,
@@ -103,7 +102,6 @@ const CourseType = new GraphQLObjectType({
                         sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
                     });
                 }).then((res) => { 
-                    console.log(res)
                     res.Sections = sects;
                     return res;
                  });

@@ -1,6 +1,5 @@
 import fs from 'fs';
 
-
 // Generates a comma delimited url encoded composite key
 // eg. Term: {year},{quarter}, Course: {year},{quarter},{curriculum},{courseNumber}
 const CompositeKey = function () {
@@ -19,7 +18,8 @@ const buildRequest = function(uri, impersonate) {
       headers: {
         Accept: 'application/json',
         certificate_name: impersonate
-      }
+      },
+      json: true
     }
   } else {
     return {
@@ -55,5 +55,7 @@ const PageResult = (collection, pStart, pSize) => {
   let PageEnd = (pSize || 10) + PageStart;
   return collection.slice(PageStart, PageEnd);
 }
+
+
 
 module.exports = { CompositeKey, buildRequest, validateCert, PageResult };

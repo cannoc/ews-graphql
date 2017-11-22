@@ -9,7 +9,7 @@ function createLoaders(impersonate) {
         section: new DataLoader(keys => Promise.all(keys.map(key => sws.GetSection(key, impersonate)))),
         pwsPerson: new DataLoader(keys => Promise.all(keys.map(key => pws.GetPWSPerson(key, impersonate)))),
         swsPerson: new DataLoader(keys => Promise.all(keys.map(key => sws.GetStudentPerson(key, impersonate)))),
-        enrollment: new DataLoader(keys => Promise.all(keys.map(key => sws.GetEnrollment(key, impersonate))))
+        enrollment: new DataLoader(keys => Promise.all(keys.map(key => sws.SearchEnrollment(key, impersonate))))
     }
   }
 

@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLBoolean, GraphQLList, GraphQLNonNull } = require('graphql');
+const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLFloat, GraphQLBoolean, GraphQLList, GraphQLNonNull } = require('graphql');
 const { CompositeKey } = require('../utils');
 
 const EnrollmentSearchType = new GraphQLObjectType({
@@ -19,7 +19,7 @@ const EnrollmentType = new GraphQLObjectType({
         ClassCode: { type: GraphQLString },
         ClassDescription: { type: GraphQLString },
         ClassLevel: { type: GraphQLString },
-        CurrentRegisteredCredits: { type: GraphQLInt },
+        CurrentRegisteredCredits: { type: GraphQLFloat },
         EnrollmentStatus: { type: GraphQLString },
         EnrollmentStatusDate: { type: GraphQLString },
         HonorsProgram: { type: GraphQLBoolean },

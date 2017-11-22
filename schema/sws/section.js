@@ -41,7 +41,26 @@ const SectionType = new GraphQLObjectType({
     },
     CourseTitle: { type: GraphQLString },
     SectionID: { type: GraphQLString },
-    Meetings: { type: new GraphQLList(SectionMeeting) }
+    Meetings: { type: new GraphQLList(SectionMeeting) },
+    Registrations: { 
+      type: require('./registration').RegistrationSearchType,
+      args: {
+        PageSize: { type: GraphQLInt },
+        PageStart: { type: GraphQLInt }
+      },
+      resolve: (section, args, {impersonate}) => {
+        let searchArgs = {
+          Year: section.Course.Year,
+          Quarter: section.Course.Quarter,
+          CurriculumAbbr: section.Course.CurriculumAbbreviation,
+          CourseNumber: section.Course.CourseNumber,
+          SectionID: section.SectionID,
+          PageSize: args.PageSize,
+          PageStart: args.PageStart
+        }
+        return require('./resolvers').SearchRegistration(searchArgs, impersonate);
+      }
+  }
   })
 });
 

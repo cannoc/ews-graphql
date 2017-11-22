@@ -10,7 +10,7 @@ const { SectionType, SectionSearchType, BaseSectionType } = require('./section')
 const { SWSPerson, SWSPersonSearch } = require('./swsPerson');
 const { CollegeType, CollegeSearchType } = require('./college');
 const { RegistrationSearchType, RegistrationType } = require('./registration');
-const { EnrollmentSearchType } = require('./enrollment');
+const { EnrollmentSearchType, EnrollmentType } = require('./enrollment');
 
 const sws = {
   GetTerm: {
@@ -170,19 +170,30 @@ const sws = {
       RegID: { type: GraphQLString },
       SectionID: { type: GraphQLString },
       TranscriptableCourse: { type: GraphQLBoolean },
-      Year: { type: GraphQLInt }
+      Year: { type: GraphQLInt },
+      PageSize: { type: GraphQLInt },
+      PageStart: { type: GraphQLInt }
     },
     resolve: (root, args, {impersonate}) => Resolvers.SearchRegistration(args, impersonate)
   },
   // GetRegistration: {
     
   // },
-  GetEnrollment: {
+  SearchEnrollment: {
     type: EnrollmentSearchType,
     args: {
       RegID: { type: GraphQLString }
     },
     resolve: (root, args, {loaders}) => loaders.enrollment.load(args.RegID)
+  },
+  GetEnrollment: {
+    type: EnrollmentType,
+    args: {
+      RegID: { type: new GraphQLNonNull(GraphQLString) },
+      Year: { type: new GraphQLNonNull(GraphQLInt) },
+      Quarter: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    resolve: (root, args, {impersonate}) => require('./resolvers').GetEnrollment(args, impersonate)
   }
 }
 

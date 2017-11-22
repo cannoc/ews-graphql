@@ -37,7 +37,33 @@ const RegIDUrlType = new GraphQLObjectType({
     description: "RegID Url Type",
     fields: () => ({
         Href: { type: GraphQLString },
-        RegID: { type: GraphQLString }
+        RegID: { type: GraphQLString },
+        SWSPerson: {
+            type: SWSPerson,
+            resolve: (root, args, {loaders}) => loaders.swsPerson.load(root.RegID)
+        },
+        PWSPerson: { 
+            type: require('../pws/pwsPerson').PWSPersonType,
+            resolve: (root, args, {loaders}) => loaders.pwsPerson.load(root.RegID)
+        },
+        Enrollments: {
+            type: require("./enrollment").EnrollmentSearchType,
+            resolve: (root, args, {loaders}) => loaders.enrollment.load(root.RegID)
+        },
+        CurrentEnrollment: {
+            type: require("./enrollment").EnrollmentType,
+            resolve: (root, args, {loaders, impersonate}) => {
+                return loaders.term.load("current").then(term => {
+                    let enrollArgs = {
+                        Year: term.Year,
+                        Quarter: term.Quarter,
+                        RegID: root.RegID
+                    };
+                    return require("./resolvers").GetEnrollment(enrollArgs, impersonate);
+                })
+                
+            }
+        }
     })
 });
 

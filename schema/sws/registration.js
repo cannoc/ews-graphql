@@ -5,10 +5,10 @@ const RegistrationSearchType = new GraphQLObjectType({
     name: "RegistrationSearchType",
     description: "Registration Search Type",
     fields: () => ({
-        Registrations: { type: new GraphQLList(RegistrationBaseType)},
         TotalCount: { type: GraphQLInt },
         PageSize: { type: GraphQLString },
-        PageStart: { type: GraphQLString }
+        PageStart: { type: GraphQLString },
+        Registrations: { type: new GraphQLList(RegistrationBaseType)}
     })
 });
 
@@ -36,10 +36,6 @@ const RegistrationBaseType = new GraphQLObjectType({
         IsIndependentStart: { type: GraphQLBoolean },
         Metadata: { type: GraphQLString },
         Person: { type: require('./swsPerson').RegIDUrlType },
-        SWSPerson: {
-            type: require('./swsPerson').SWSPerson,
-            resolve: (root, args, {loaders}) => loaders.swsPerson.load(root.Person.RegID)
-        },
         RepeatCourse: { type: GraphQLBoolean },
         RepositoryTimeStamp: { type: GraphQLString },
         RequestDate: { type: GraphQLString },

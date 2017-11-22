@@ -1,18 +1,19 @@
 const rp = require('request-promise');
 import fs from 'fs';
 import {buildRequest, PageResult } from '../utils';
+import {Dispatcher} from '../dispatcher';
 
 const BaseUrl = process.env.SWSBaseUrl;
 
 const Resolvers = {
   GetTerm: (key, impersonate) => {
     let req = buildRequest(`${BaseUrl}term/${key}`, impersonate);
-    return rp(req).then(res => JSON.parse(res));
+    return Dispatcher(req);
   },
   SearchCurriculum: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}Curriculum?college_abbreviation=${args.CollegeAbbreviation || ''}&department_abbreviation=${args.DeptAbbr || ''}&future_terms=${args.FutureTerms || 0}&Quarter=${args.Quarter || ''}&Year=${args.Year || ''}`, impersonate);
 
-    return rp(req).then(res => JSON.parse(res)).then(res => {
+    return Dispatcher(req).then(res => {
       res.Curricula = PageResult(res.Curricula, args.PageStart, args.PageSize);
       res.PageStart = args.PageStart || 0;
       res.PageSize = args.PageSize || 10;
@@ -26,33 +27,33 @@ const Resolvers = {
   CourseSearch: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}Course?changed_since_date=${args.ChangedSinceDate || ''}&course_number=${args.CourseNumber || ''}&course_title_contains=${args.CourseTitleContains || ''}&course_title_starts=${args.CourseTitleStarts || ''}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&future_terms=${args.FutureTerms || 0}&page_size=${args.PageSize || 10}&page_start=${args.PageStart || ''}&quarter=${args.Quarter}&transcriptable_course=${args.TranscriptableCourse || 'yes'}&year=${args.Year}&excludeCoursesWithoutSections=${args.ExcludeCoursesWithoutSections || ''}`, impersonate);
 
-    return rp(req).then(res => JSON.parse(res));
+    return Dispatcher(req);
   },
   GetCourse: (key, impersonate) => {
     let req = buildRequest(`${BaseUrl}course/${key}`, impersonate);
-    return rp(req).then(res => JSON.parse(res));
+    return Dispatcher(req);
   },
   SectionSearch: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}Section?year=${args.Year}&quarter=${args.Quarter}&future_terms=${args.FutureTerms || 0}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&course_number=${args.CourseNumber}&reg_id=${args.RegId || ''}&search_by=${args.SearchBy || ''}&include_secondaries=${args.IndcludeSecondaries || ''}&delete_flag=${args.DeleteFlag || ''}&changed_since_date=${args.ChangedSinceDate || ''}&transcriptable_course=${args.TranscriptableCourse || 'yes'}&page_size=${args.PageSize || 10}&page_start=${args.PageStart || ''}&facility_code=${args.FacilityCode || ''}&room_number=${args.RoomNumber || ''}&sln=${args.Sln || ''}`, impersonate);
 
-    return rp(req).then(res => JSON.parse(res));
+    return Dispatcher(req);
   },
   GetSection: (key, impersonate) => {
       let req = buildRequest(`${BaseUrl}Course/${key}`, impersonate);
-      return rp(req).then(res => JSON.parse(res));
+      return Dispatcher(req);
   },
   GetStudentPerson: (key, impersonate) => {
     let req = buildRequest(`${BaseUrl}person/${key}`, impersonate);
-    return rp(req).then(res => JSON.parse(res));
+    return Dispatcher(req);
   },
   SearchStudentPerson: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}/person?employee_id=${args.EmployeeID || ''}&net_id=${args.UWNetID || ''}&reg_id=${args.UWRegID || ''}&student_number=${args.StudentNumber || ''}&student_system_key=${args.StudentSystemkey || ''}`, impersonate);
-    return rp(req).then(JSON.parse);
+    return rDispatcher(req);
   },
   CollegeSearch: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}/college?campus_short_name=${args.CampusShortName || ''}&future_terms=${args.FutureTerms || 0}&quarter=${args.Quarter || ''}&year=${args.Year || ''}`, impersonate);
     
-    return rp(req).then(JSON.parse).then(res => {
+    return Dispatcher(req).then(res => {
       res.Colleges = PageResult(res.Colleges, args.PageStart, args.PageSize);
       res.PageStart = args.PageStart || 0;
       res.PageSize = args.PageSize || 10;
@@ -68,14 +69,25 @@ const Resolvers = {
   SearchRegistration: (args, impersonate) => {
     let req = buildRequest(`${BaseUrl}registration?changed_since_date=${args.ChangedSinceDate || ''}&course_number=${args.CourseNumber || ''}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&instructor_reg_id=${args.InstructorRegID || ''}&Quarter=${args.Quarter || ''}&reg_id=${args.RegID || ''}&section_id=${args.SectionID || ''}&transcriptable_course=${args.TranscriptableCourse || ''}&verbose=true&Year=${args.Year || ''}`, impersonate);
     
-    return rp(req).then(JSON.parse);
+    return Dispatcher(req).then(res => {
+      res.Registrations = PageResult(res.Registrations, args.PageStart, args.PageSize);
+      res.PageStart = args.PageStart || 0;
+      res.PageSize = args.PageSize || 10;
+      return res;
+    });
   },
-  GetEnrollment: (key, impersonate) => {
+  SearchEnrollment: (key, impersonate) => {
     let req = buildRequest(`${BaseUrl}enrollment?reg_id=${key}&verbose=true`, impersonate);
 
-    return rp(req).then(JSON.parse);
+    return Dispatcher(req);
+  },
+  GetEnrollment: (args, impersonate) => {
+    return Resolvers.SearchEnrollment(args.RegID, impersonate).then((enrollments) => {
+      return enrollments.Enrollments.filter((enrollment) => {
+        return enrollment.Term.Year === args.Year && enrollment.Term.Quarter === args.Quarter;
+      })[0];
+    })
   }
-  
 }
 
 module.exports = Resolvers;
