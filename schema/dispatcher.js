@@ -4,12 +4,11 @@ import delay from 'delay';
 
 let processed = 0;
 
-class PriorityQueue {
+class PromiseQueue {
 	constructor() {
         this._queue = [];
         this._logCount = 0;
     }
-
     log() {
         if(this._logCount > 100 || this.size == 0) {
             console.log(`ProcessID: ${process.pid}, QueueSize: ${this.size}, TotalProcessed: ${processed}`);
@@ -18,18 +17,15 @@ class PriorityQueue {
             this._logCount++;
         }
     }
-
 	enqueue(run, opts) {
         delay(this.size);
         this._queue.push({run});
         return;
 	}
-
 	dequeue() {
         this.log();
 		return this._queue.shift().run;
 	}
-
 	get size() {
 		return this._queue.length;
 	}
@@ -37,7 +33,7 @@ class PriorityQueue {
 
 const maxConcurrent = 50;
 
-const queue = new pq({concurrency: maxConcurrent, queueClass: PriorityQueue});
+const queue = new pq({concurrency: maxConcurrent, queueClass: PromiseQueue});
 let onIdle = null;
 let start = null;
 
