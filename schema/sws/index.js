@@ -58,14 +58,14 @@ const sws = {
           CourseTitleStartsWith: { type: GraphQLString },
           CurriculumAbbr: { type: GraphQLString },
           FutureTerms: { type: GraphQLString },
-          PageSize: { type: GraphQLString },
-          PageStart: { type: GraphQLString },
+          PageSize: { type: GraphQLInt },
+          PageStart: { type: GraphQLInt },
           Quarter:  { type: new GraphQLNonNull(GraphQLString) },
           TranscriptableCourse:  { type: GraphQLString },
           Year:  { type: new GraphQLNonNull(GraphQLInt) },
           ExcludeCoursesWithoutSections: { type: GraphQLString }
       },
-      resolve: (root, args, {impersonate}) => Resolvers.CourseSearch(args, impersonate)
+      resolve: (root, args, {impersonate}) => Resolvers.SearchCourse(args, impersonate)
   },
   GetCourse: {
       type: CourseType,
@@ -111,7 +111,7 @@ const sws = {
           RoomNumber: { type: GraphQLString },
           Sln: { type: GraphQLString },
       },
-      resolve: (root, args, {impersonate}) => Resolvers.SectionSearch(args,impersonate)
+      resolve: (root, args, {impersonate}) => Resolvers.SearchSection(args,impersonate)
   },
   GetSWSPerson: {
     type: SWSPerson,
@@ -148,13 +148,13 @@ const sws = {
         let term = loaders.term.load("current");
         collegeArgs = Object.assign({}, args, {Year: term.Year, Quarter: term.Quarter });
       }
-      return Resolvers.CollegeSearch(collegeArgs, impersonate)
+      return Resolvers.SearchCollege(collegeArgs, impersonate)
     }
   },
   GetCollege: {
     type: CollegeType,
     args: {
-      CollegeAbbreviation: { type: GraphQLString }
+      CollegeAbbreviation: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: (root, args, {impersonate}) => Resolvers.GetCollege(args.CollegeAbbreviation, impersonate)
   },

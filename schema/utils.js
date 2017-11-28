@@ -51,11 +51,17 @@ function validateCert(cert) {
 
 // Fakes paging for resources that do not support it natively
 const PageResult = (collection, pStart, pSize) => {
-  let PageStart = pStart || 0;
+  let PageStart = (pStart || 1) - 1;
   let PageEnd = (pSize || 10) + PageStart;
   return collection.slice(PageStart, PageEnd);
 }
 
+const EncodeArguments = args => {
+  for(let arg in args) {
+    args[arg] = encodeURIComponent(args[arg]);
+  }
+  return args;
+}
 
 
-module.exports = { CompositeKey, buildRequest, validateCert, PageResult };
+module.exports = { CompositeKey, buildRequest, validateCert, PageResult, EncodeArguments };

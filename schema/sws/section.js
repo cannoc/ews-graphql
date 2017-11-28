@@ -125,15 +125,7 @@ const InstructorType = new GraphQLObjectType({
     GradeRoster: { type: HrefType },
     PercentInvolve: { type: GraphQLString },
     Person: { type: require('./swsPerson').RegIDUrlType },
-    TSPrint: { type: GraphQLBoolean },
-    SWSPerson: {
-      type: require('../sws/swsPerson').SWSPerson,
-      resolve: (root, args, {loaders}) => loaders.swsPerson.load(root.Person.RegID)
-    },
-    PWSPerson: {
-      type: require('../pws/pwsPerson').PWSPersonType,
-      resolve: (root, args, {loaders}) => loaders.pwsPerson.load(root.Person.RegID)
-    },
+    TSPrint: { type: GraphQLBoolean }
   })
 });
 const HrefType = new GraphQLObjectType({

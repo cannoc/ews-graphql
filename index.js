@@ -17,6 +17,7 @@ var credentials = {
     requestCert: false 
 };
 
+// Fix for windows to use other workers, without this it only uses the last worker
 cluster.schedulingPolicy = cluster.SCHED_RR;
 
 if (cluster.isMaster) {

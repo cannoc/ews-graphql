@@ -35,7 +35,7 @@ const BaseCourseType = new GraphQLObjectType({
             },
             resolve: (course, args, {impersonate}) => 
             { 
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber}), impersonate)
+                return require('./resolvers').SearchSection(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber}), impersonate)
                 .then(res => res.Sections)
                 .then(sections => { 
                     if(args.SectionId) { 
@@ -54,7 +54,7 @@ const BaseCourseType = new GraphQLObjectType({
             resolve: (course, args, {loaders, impersonate}) => 
             { 
                 let sects = [];
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber }), impersonate)
+                return require('./resolvers').SearchSection(Object.assign({}, args, {Year: course.Year, Quarter: course.Quarter, CurriculumAbbr: course.CurriculumAbbreviation, CourseNumber: course.CourseNumber }), impersonate)
                 .then(res => {
                     res.Sections.forEach((section) => {
                         sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
@@ -96,7 +96,7 @@ const CourseType = new GraphQLObjectType({
             resolve: (course, args, {loaders, impersonate}) => 
             { 
                 let sects = [];
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber }), impersonate)
+                return require('./resolvers').SearchSection(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber }), impersonate)
                 .then(res => {
                     res.sections.forEach((section) => {
                         sects.push(loaders.section.load(CompositeKey(section.Year, section.Quarter, section.CurriculumAbbreviation, section.CourseNumber + "/" + section.SectionID)));
@@ -116,7 +116,7 @@ const CourseType = new GraphQLObjectType({
             },
             resolve: (course, args, {loaders, impersonate}) => 
             { 
-                return require('./resolvers').SectionSearch(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
+                return require('./resolvers').SearchSection(Object.assign({}, args, {Year: course.Key.Year, Quarter: course.Key.Quarter, CurriculumAbbr: course.Key.Curriculum, CourseNumber: course.Key.CourseNumber, Verbose: args.Verbose}), impersonate)
                 .then(res => res.Sections);
             }
         },

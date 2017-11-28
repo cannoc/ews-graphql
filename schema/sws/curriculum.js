@@ -43,7 +43,7 @@ const CurricType = new GraphQLObjectType({
           let term = loaders.term.load("current");
           courseArgs = Object.assign({}, courseArgs, {Year: term.Year, Quarter: term.Quarter });
         }
-        return require('./resolvers').CourseSearch(courseArgs, impersonate);
+        return require('./resolvers').SearchCourse(courseArgs, impersonate);
       }
     }
   })

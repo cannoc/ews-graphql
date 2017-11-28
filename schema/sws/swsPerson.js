@@ -44,7 +44,12 @@ const RegIDUrlType = new GraphQLObjectType({
         },
         PWSPerson: { 
             type: require('../pws/pwsPerson').PWSPersonType,
-            resolve: (root, args, {loaders}) => loaders.pwsPerson.load(root.RegID)
+            resolve: (root, args, {loaders}) => {
+                if(root.RegID) {
+                    return loaders.pwsPerson.load(root.RegID)
+                }
+                return null;
+            }
         },
         Enrollments: {
             type: require("./enrollment").EnrollmentSearchType,
