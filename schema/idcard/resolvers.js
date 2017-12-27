@@ -1,7 +1,7 @@
-const rp = require('request-promise');
+import rp from 'request-promise';
 import fs from 'fs';
-import {buildRequest} from '../utils';
-import {Dispatcher} from '../dispatcher';
+import { buildRequest } from '../utils';
+import { Dispatcher } from '../dispatcher';
 
 const BaseUrl = process.env.IDCardBaseUrl;
 

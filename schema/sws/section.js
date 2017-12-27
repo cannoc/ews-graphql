@@ -55,8 +55,8 @@ const SectionType = new GraphQLObjectType({
           CurriculumAbbr: section.Course.CurriculumAbbreviation,
           CourseNumber: section.Course.CourseNumber,
           SectionID: section.SectionID,
-          PageSize: args.PageSize,
-          PageStart: args.PageStart
+          PageSize: args.PageSize || 10,
+          PageStart: args.PageStart || 1
         }
         return require('./resolvers').SearchRegistration(searchArgs, impersonate);
       }

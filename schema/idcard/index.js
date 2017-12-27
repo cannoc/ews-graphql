@@ -1,5 +1,5 @@
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } = require('graphql');
-const Resolvers = require('./resolvers');
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
+import Resolvers from './resolvers';
 import { CardSearchType, CardType } from './cards';
 import { PhotoType, PhotoSearchType } from './photos';
 

@@ -1,5 +1,5 @@
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } = require('graphql');
-const Resolvers = require('./resolvers');
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
+import Resolvers from './resolvers';
 import {PWSPersonType, PWSPersonSearchType} from './pwsPerson';
 
 const pws = {

@@ -1,5 +1,5 @@
-const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull, GraphQLBoolean } = require('graphql');
-const { CompositeKey } = require('../utils');
+import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull, GraphQLBoolean } from 'graphql';
+import { CompositeKey } from '../utils';
 
 const PersonAffiliationsType = new GraphQLObjectType({
     name: "PersonAffiliations",

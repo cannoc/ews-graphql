@@ -1,7 +1,7 @@
 const rp = require('request-promise');
 import fs from 'fs';
-import {buildRequest, EncodeArguments} from '../utils';
-import {Dispatcher} from '../dispatcher';
+import { buildRequest, EncodeArguments } from '../utils';
+import { Dispatcher } from '../dispatcher';
 
 const BaseUrl = process.env.PWSBaseUrl;
 

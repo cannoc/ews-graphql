@@ -40,8 +40,12 @@ const Resolvers = {
     args = EncodeArguments(args);
     args.PageStart = args.PageStart == 0 ? 1 : args.PageStart;
     let req = buildRequest(`${BaseUrl}Section?year=${args.Year}&quarter=${args.Quarter}&future_terms=${args.FutureTerms || 0}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&course_number=${args.CourseNumber}&reg_id=${args.RegId || ''}&search_by=${args.SearchBy || ''}&include_secondaries=${args.IndcludeSecondaries || ''}&delete_flag=${args.DeleteFlag || ''}&changed_since_date=${args.ChangedSinceDate || ''}&transcriptable_course=${args.TranscriptableCourse || 'yes'}&page_size=${args.PageSize || 10}&page_start=${args.PageStart || 1}&facility_code=${args.FacilityCode || ''}&room_number=${args.RoomNumber || ''}&sln=${args.Sln || ''}`, impersonate);
-
-    return Dispatcher(req);
+    
+    return Dispatcher(req).then(res => {
+      res.PageStart = args.PageStart || 1;
+      res.PageSize = args.PageSize || 10;
+      return res;
+    });
   },
   GetSection: (key, impersonate) => {
     let req = buildRequest(`${BaseUrl}Course/${key}`, impersonate);
@@ -75,6 +79,7 @@ const Resolvers = {
   },
   SearchRegistration: (args, impersonate) => {
     args = EncodeArguments(args);
+    args.PageStart = args.PageStart == 0 ? 1 : args.PageStart;
     let req = buildRequest(`${BaseUrl}registration?changed_since_date=${args.ChangedSinceDate || ''}&course_number=${args.CourseNumber || ''}&curriculum_abbreviation=${args.CurriculumAbbr || ''}&instructor_reg_id=${args.InstructorRegID || ''}&Quarter=${args.Quarter || ''}&reg_id=${args.RegID || ''}&section_id=${args.SectionID || ''}&transcriptable_course=${args.TranscriptableCourse || ''}&verbose=true&Year=${args.Year || ''}`, impersonate);
     
     return Dispatcher(req).then(res => {
@@ -93,9 +98,9 @@ const Resolvers = {
     args = EncodeArguments(args);
     return Resolvers.SearchEnrollment(args.RegID, impersonate).then((enrollments) => {
       return enrollments.Enrollments.filter((enrollment) => {
-        return enrollment.Term.Year === args.Year && enrollment.Term.Quarter === args.Quarter;
+        return enrollment.Term.Year == args.Year && enrollment.Term.Quarter == args.Quarter;
       })[0];
-    })
+    });
   }
 }
 
